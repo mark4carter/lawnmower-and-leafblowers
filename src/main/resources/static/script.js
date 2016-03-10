@@ -4,36 +4,46 @@ var app = angular.module('app', ['ngTouch']);
 app.controller('MainCtrl', function ($scope, $http) {
 
   $scope.$watch('search', function() {
-    sendit();
+    //sendit();
   });
   $scope.$watch('selectchoice', function() {
-    sendit();
+    //sendit();
   });
-  $scope.search = ""
+  $scope.addCustomerName = ""
+  $scope.addTechName = ""
 
   $scope.selectchoice =" "
-  $scope.base = "http://localhost:8080"
+  $scope.base = "http://localhost:8080/controller/"
   $scope.getData = function(item, key) {
     return item[key];
   }
 
-  $scope.sendit = function() {
+  $scope.sendit = function(action) {
     console.log("sending");
-    var url = "controller/";
-    switch($scope.selectchoice) {
-      case "LIST_PCS" :
-        url = $scope.base + "/listPCs"
+    var url = $scope.base + "/listCustomers/";
+    switch(action) {
+      case "ADD_CUSTOMER" :
+        url = $scope.base + $scope.addCustomerName + "/addCustomer"
+        $scope.addCustomerName = ""
         break;
-      case "LIST_GOALS" :
-        url = $scope.base + $scope.search + "/listGoals"
+      case "ADD_TECH" :
+        url = $scope.base + $scope.addTechName + "/addTechnician"
+        $scope.addTechName = ""
+        break;
+      case "LIST_TECHNICIANS" :
+        url = $scope.base + "listTechnicians"
+        break;
+      case "LIST_CUSTOMER" :
+        url = $scope.base + "listCustomers"
         break;
     }
 
-    $http.get($scope.base + url)
+    $http.get(url)
     .then(function(response) {
       console.log(response);
       $scope.myData = response.data;
       $scope.keyZ = Object.keys(response.data[0]);
+
     })
   }
 });
