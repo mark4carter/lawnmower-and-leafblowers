@@ -82,6 +82,26 @@ public class LawnController {
     return invoiceRepository.findByDateOfServiceBetweenOrderByTechnicianAsc(lastWeekDate, newWeekDate);
   }
   
+  @CrossOrigin
+  @RequestMapping(value = "{newWeekDate}/listMonthlyInvoice")
+  List<Invoice> listMonthlyInvoice(@PathVariable Long newWeekDate) {
+    
+    Long BeginningOfLastMonth = getBeginningOfLastMonth(newWeekDate);
+    Long EndOfLastMonth = getEndOfLastMonth(newWeekDate);
+    
+    return invoiceRepository.findByDateOfServiceBetweenOrderByCustomerAsc(BeginningOfLastMonth, EndOfLastMonth);
+  }
+  
+  @CrossOrigin
+  @RequestMapping(value = "/resetAll")
+  void resetAll() {
+    invoiceRepository.deleteAll();
+    customerRepository.deleteAll();
+    technicianRepository.deleteAll();
+    Technician CEO = new Technician("THE CEO!");
+    technicianRepository.save(CEO);
+  }
+  
   public Date createSignUpDate(Date date, int numberOfDays) {
     Date newDate = new Date(date.getTime());
     
@@ -93,6 +113,33 @@ public class LawnController {
     return newDate;
   }
   
+  public Long getBeginningOfLastMonth(Long newWeekDate) {
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTimeInMillis(newWeekDate);
+    calendar.add(Calendar.MONTH, -1);
+    calendar.set(Calendar.DAY_OF_MONTH,
+            calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+    calendar.set(Calendar.HOUR_OF_DAY, 0);
+    calendar.set(Calendar.MINUTE, 0);
+    calendar.set(Calendar.SECOND, 0);
+    calendar.set(Calendar.MILLISECOND, 0);
+    return calendar.getTime().getTime();
+  }
+  
+  public Long getEndOfLastMonth(Long newWeekDate) {
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTimeInMillis(newWeekDate);
+    calendar.add(Calendar.MONTH, -1);
+    calendar.set(Calendar.DAY_OF_MONTH,
+        calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+    calendar.set(Calendar.HOUR_OF_DAY, 23);
+    calendar.set(Calendar.MINUTE, 59);
+    calendar.set(Calendar.SECOND, 59);
+    calendar.set(Calendar.MILLISECOND, 999);
+    return calendar.getTime().getTime();
+    
+  }
+  
   public Boolean serviceIsWithinServiceMonths(Long nextDayOfService) {
     GregorianCalendar calendar = new GregorianCalendar();
     calendar.setTimeInMillis(nextDayOfService);
@@ -100,8 +147,7 @@ public class LawnController {
     if (serviceMonth >= 2 && serviceMonth <= 9 )  {
       return true;
     }
-    return false;
-    
+    return false;    
   }
   
   public Long addDays(Long date, int numberOfDays) {

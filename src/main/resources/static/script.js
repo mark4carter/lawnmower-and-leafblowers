@@ -3,16 +3,17 @@ var app = angular.module('app', ['ngTouch']);
 
 app.controller('MainCtrl', function ($scope, $http) {
 
-  $scope.$watch('search', function() {
-    //sendit();
-  });
-  $scope.$watch('selectchoice', function() {
-    //sendit();
-  });
   $scope.addCustomerName = ""
   $scope.addTechName = ""
   $scope.currentDate = new Date();
   $scope.defaultTable = false;
+  $scope.monthTable = false;
+  $scope.oldMonth;
+  var newMonth = false;
+
+  var monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+  ];
 
   $scope.selectchoice =" "
   $scope.base = "http://localhost:8080/controller/"
@@ -27,7 +28,13 @@ app.controller('MainCtrl', function ($scope, $http) {
   }
 
   $scope.addWeek = function(date) {
-    return date.setDate(date.getDate() + 7);
+    var newDate = new Date(date) ;
+    newDate.setDate(date.getDate() + 7);
+    if (date.getMonth() != newDate.getMonth()){
+      newMonth = true;
+      $scope.oldMonth = monthNames[date.getMonth()];
+    }
+    return newDate;
   }
 
   $scope.sendit = function(action) {
@@ -56,10 +63,15 @@ app.controller('MainCtrl', function ($scope, $http) {
         url = $scope.base + $scope.toJavaDate($scope.currentDate) + "/forceNextWeek"
         $scope.currentDate = new Date($scope.currentDate)
         break;
+      case "RESET_ALL" :
+        url = $scope.base + "resetAll"
+          $scope.currentDate = new Date();
+        break;
     }
 
     $http.get(url)
     .then(function(response) {
+      hideTables();
       console.log(response);
       switch(action) {
         case "FORCE_NEXT_WEEK" :
@@ -83,7 +95,6 @@ app.controller('MainCtrl', function ($scope, $http) {
     var data = response.data;
     if (data[0]) {
       var currentTechId = data[0].technician.idTechnician;
-      var currentTechIndex = 0;
       var invoiceArray = [];
       var tempArray = [];
       $scope.keyZ = Object.keys(response.data[0]);
@@ -92,7 +103,7 @@ app.controller('MainCtrl', function ($scope, $http) {
           tempArray.push(data[i])
         } else {
           invoiceArray.push(tempArray);
-          currentTechIndex++;
+          currentTechId = data[i].technician.idTechnician
           tempArray = [];
           tempArray.push(data[i])
         }
@@ -103,92 +114,45 @@ app.controller('MainCtrl', function ($scope, $http) {
     } else {
       $scope.forceWeekTable = false;
     }
-  }
-});
-
-
-
-
-
-
-
-app.controller('SecondaryCtrl', function ($scope, $http) {
-
-  $scope.search = ""
-  $scope.selectchoice ="LIST_PCS"
-  $scope.base = "http://localhost:8080/api/game/"
-
-  $scope.sendit = function() {
-    console.log("sending?")
-    var url = "";
-      switch($scope.selectchoice) {
-        case "CREATE_PLAYER" :
-          url = $scope.base + $scope.search + "/createPlayerCharacter"
-          break;
-        case "CREATE_LOCATION" :
-          url = $scope.base + $scope.search + "/createLocation"
-          break;
-        case "CREATE_THREAD" :
-          url = $scope.base + $scope.search + "/createThread"
-          break;
-        case "ADD_PLAYER_TO_THREAD" :
-          url = $scope.base + $scope.search + "/" + $scope.arg2 + "/addPlayerToThread"
-          break;
-        case "DELETE_BY_PLAYERID" :
-          url = $scope.base + $scope.search + "/RemoveByPlayerId"
-          httpDelete(url);
-          url = "";
-          break;
-        default :
-          fetch()
-          break;
-      }
-
-    if (url) {
-      $http.post(url)
-        .then(function(response) {
-          console.log(response);
-          $scope.myData = response.data;
-          $scope.keyZ = Object.keys(response.data[0]);
-        })
-    }
+    if (newMonth) processNewMonth();
   }
 
-  function httpDelete(url) {
-    $http.delete(url)
-      .then(function(response) {
-        console.log(response);
-        $scope.myData = response.data;
-        $scope.keyZ = Object.keys(response.data[0]);
-      })
-    }
+  var hideTables = function() {
+    $scope.defaultTable = false;
+    $scope.forceWeekTable = false;
+    $scope.monthTable = false;
+  }
 
-  function fetch() {
-    var url = "";
-    switch($scope.selectchoice) {
-      case "LIST_PCS" :
-        url = $scope.base + "/listPCs"
-        break;
-      case "LIST_GOALS" :
-        url = $scope.base + $scope.search + "/listGoals"
-        break;
-      case "PLAYER_BY_LOCATION" :
-        url = $scope.base + $scope.search + "/playerByLocationId"
-        break;
-      case "LIST_PCS_BY_GOAL" :
-        url = $scope.base + $scope.search + "/listPlayerByGoal"
-        break;
-      case "LIST_ALL_GOALS" :
-        url = $scope.base + "/listThreadGoals"
-        break;
-    }
-
+  var processNewMonth = function() {
+    var url = $scope.base + $scope.toJavaDate($scope.currentDate) + "/listMonthlyInvoice"
     $http.get(url)
-      .then(function(response) {
-        console.log(response);
-        $scope.myData = response.data;
-
-        $scope.keyZ = Object.keys(response.data[0]);
+    .then(function(response) {
+      console.log(response.data.length)
+      console.log(response);
+        var monthData = response.data;
+        if (monthData[0]) {
+          var currentCustomerId = monthData[0].customer.idCustomer;
+          var invoiceArray = [];
+          var tempArray = [];
+          $scope.monthKeyZ = Object.keys(monthData[0]);
+          for (var i = 0; i < monthData.length; i++) {
+            if (currentCustomerId == monthData[i].customer.idCustomer) {
+              tempArray.push(monthData[i])
+            } else {
+              invoiceArray.push(tempArray);
+              currentCustomerId = monthData[i].customer.idCustomer
+              tempArray = [];
+              tempArray.push(monthData[i])
+            }
+          }
+          invoiceArray.push(tempArray);
+          $scope.processNewMonthData = invoiceArray;
+          $scope.monthTable = true;
+        } else {
+          $scope.monthTable = false;
+        }
       })
-    }
+    newMonth = false;
+  }
+
 });
