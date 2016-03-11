@@ -1,12 +1,17 @@
 package io.mark4carter;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Customer {
@@ -17,19 +22,36 @@ public class Customer {
   
   private String name;
   
+  private String address;
+  
   @ManyToOne
   @JoinColumn(name = "idTechnician")
   private Technician technician;
   
-  private Date signUpDate;
+  @OneToMany(mappedBy = "customer")
+  private Set<Invoice> invoice = new HashSet<Invoice>();
+  
+  private Long signUpDate;
+  
+  private Long nextDayOfService;
   
   Customer() {
     
   }
   
-  Customer(String name, Technician technician) {
+  Customer(String name, Technician technician, Date signUpDate) {
     this.name = name;
     this.technician = technician;
+    this.signUpDate = signUpDate.getTime();
+    this.nextDayOfService = createSignUpDate(signUpDate).getTime();
+  }
+  
+  Customer(String name, Technician technician, Long signUpDate) {
+    this.name = name;
+    this.technician = technician;
+    this.signUpDate = signUpDate;
+    this.nextDayOfService = createSignUpDate(new Date(signUpDate)).getTime();
+    
   }
   
 
@@ -57,15 +79,38 @@ public class Customer {
     this.technician = technician;
   }
 
-  public Date getSignUpDate() {
+  public Long getSignUpDate() {
     return signUpDate;
   }
 
-  public void setSignUpDate(Date signUpDate) {
+  public void setSignUpDate(Long signUpDate) {
     this.signUpDate = signUpDate;
   }
-  
-  
-  
 
+  public String getAddress() {
+    return address;
+  }
+
+  public void setAddress(String address) {
+    this.address = address;
+  }
+
+  public Long getNextDayOfService() {
+    return nextDayOfService;
+  }
+
+  public void setNextDayOfService(Long nextDayOfService) {
+    this.nextDayOfService = nextDayOfService;
+  }
+  
+  public Date createSignUpDate(Date date) {
+    Date newDate = new Date(date.getTime());
+    
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTime(newDate);
+    calendar.add(Calendar.DATE, 14);
+    newDate.setTime(calendar.getTime().getTime());
+    
+    return newDate;
+  }
 }

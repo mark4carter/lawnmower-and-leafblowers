@@ -11,11 +11,20 @@ app.controller('MainCtrl', function ($scope, $http) {
   });
   $scope.addCustomerName = ""
   $scope.addTechName = ""
+  $scope.currentDate = new Date();
 
   $scope.selectchoice =" "
   $scope.base = "http://localhost:8080/controller/"
   $scope.getData = function(item, key) {
     return item[key];
+  }
+
+  $scope.toJavaDate = function(date) {
+    var clientMilliseconds = date.getTime();
+  }
+
+  $scope.addWeek = function(date) {
+    return date.setDate(date.getDate() + 14);
   }
 
   $scope.sendit = function(action) {
@@ -35,6 +44,13 @@ app.controller('MainCtrl', function ($scope, $http) {
         break;
       case "LIST_CUSTOMER" :
         url = $scope.base + "listCustomers"
+        break;
+      case "LIST_INVOICES" :
+        url = $scope.base + "listInvoices"
+        break;
+      case "FORCE_NEXT_WEEK" :
+        $scope.currentDate = $scope.addWeek(currentDate);
+        url = $scope.base + $scope.toJavaDate($scope.currentDate) + "/forceNextWeek"
         break;
     }
 

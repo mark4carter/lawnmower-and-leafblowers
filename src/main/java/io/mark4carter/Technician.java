@@ -20,7 +20,10 @@ public class Technician {
   private Long numberOfCustomers;  
 
   @OneToMany(mappedBy="technician")
-  private Set<Customer> customer = new HashSet<>();
+  private Set<Customer> customers = new HashSet<Customer>();
+  
+  @OneToMany(mappedBy="technician")
+  private Set<Invoice> invoices = new HashSet<Invoice>();
   
   Technician() {
     

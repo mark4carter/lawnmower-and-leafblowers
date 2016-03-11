@@ -1,6 +1,8 @@
 package io.mark4carter;
 
-import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ public class LawnController {
   
   private final CustomerRepository customerRepository;
   private final TechnicianRepository technicianRepository;
+  private final InvoiceRepository invoiceRepository;
   
   @CrossOrigin
   @RequestMapping(value = "/listCustomers") 
@@ -29,13 +32,19 @@ public class LawnController {
   }
   
   @CrossOrigin
+  @RequestMapping(value="/listInvoices")
+  List<Invoice> listAllInvoices() {
+    return invoiceRepository.findAll();
+  }
+  
+  @CrossOrigin
   @RequestMapping(value = "/{customerName}/addCustomer")
   List<Customer> addCustomerByName(@PathVariable String customerName) {
     List<Technician> techs = technicianRepository.findAllByOrderByNumberOfCustomersAsc();    
     Technician assignedTech = techs.get(0);
     assignedTech.setNumberOfCustomers(assignedTech.getNumberOfCustomers() + 1);
     technicianRepository.saveAndFlush(assignedTech);
-    Customer newCustomer = new Customer(customerName, assignedTech);
+    Customer newCustomer = new Customer(customerName, assignedTech, new Date());
     customerRepository.save(newCustomer);
     
     return customerRepository.findAll();    
@@ -49,11 +58,30 @@ public class LawnController {
     return technicianRepository.findAll();
   }
   
+  @CrossOrigin
+  @RequestMapping(value = "/forceNextWeek")
+  List<Invoice> forceNextWeek() {
+    return invoiceRepository.findAll();
+  }
+  
+  public Date createSignUpDate(Date date, int numberOfDays) {
+    Date newDate = new Date(date.getTime());
+    
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTime(newDate);
+    calendar.add(Calendar.DATE, numberOfDays);
+    newDate.setTime(calendar.getTime().getTime());
+    
+    return newDate;
+  }
+  
   @Autowired
   public LawnController( 
       CustomerRepository customerRepository,
-      TechnicianRepository technicianRepository) {
+      TechnicianRepository technicianRepository,
+      InvoiceRepository invoiceRepository) {
    this.customerRepository = customerRepository;
-   this.technicianRepository = technicianRepository;    
+   this.technicianRepository = technicianRepository;
+   this.invoiceRepository = invoiceRepository;
   }
 }

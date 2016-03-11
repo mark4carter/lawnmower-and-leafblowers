@@ -1,5 +1,7 @@
 package io.mark4carter;
 
+import java.util.Date;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +24,23 @@ public class LawnMowerAndLeafBlowersApplication implements CommandLineRunner{
 	@Autowired
 	private TechnicianRepository technicianRepository;
 	
+	@Autowired
+	private InvoiceRepository invoiceRepository;
+	
   @Override
   @Transactional
   public void run(String ...strings) throws Exception {
     Technician techOne = new Technician("TechBilly");
     technicianRepository.save(techOne);
     
-    Customer customerOne = new Customer("CustomerJohn", techOne);
+    Customer customerOne = new Customer("CustomerJohn", techOne, new Date());
     techOne.setNumberOfCustomers(techOne.getNumberOfCustomers() + 1);
     technicianRepository.saveAndFlush(techOne);    
-    customerRepository.save(customerOne);    
+    customerRepository.save(customerOne);
+    
+    Invoice invoiceOne = new Invoice(customerOne, techOne, new Date().getTime());
+    invoiceRepository.save(invoiceOne);
+   
   }
 }
 
