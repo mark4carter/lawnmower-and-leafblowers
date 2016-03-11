@@ -15,6 +15,10 @@
 
    	<div ng-app="app">
   		<div ng-controller="MainCtrl">
+			  		<span class="col-md-8 col-md-offset-1">
+			  			Current Day : {{currentDate.getFullYear()}} - {{(currentDate.getMonth()) + 1}} - {{currentDate.getDate()}}
+			  		</span>
+		  		<br><br>
 		  		<div class="input-group search-bar col-md-8 col-md-offset-2">
 			  		<input type="text" ng-model="addCustomerName" class="form-control" placeholder="Add Customer" autofocus /> <span class="input-group-addon bar-style" ng-click="sendit('ADD_CUSTOMER')" ><i class="glyphicon glyphicon-plus"></i></span>
 			  		<input type="text" ng-model="addTechName" class="form-control" placeholder="Add Technician" autofocus /> <span class="input-group-addon bar-style" ng-click="sendit('ADD_TECH')" ><i class="glyphicon glyphicon-plus"></i></span>			
@@ -29,7 +33,7 @@
 	  		<br>
 	  		<br>
 	  		<br>
-	  		<div class = "col-md-10 col-md-offset-1">
+	  		<div ng-if="defaultTable" class = "col-md-10 col-md-offset-1">
 				  <table class="table table-bordered table-hover table-striped">
 				    <tr class = "success">
 				      <th ng:repeat="k in keyZ">{{k}}</th>
@@ -38,7 +42,19 @@
 				      <tr><td ng-repeat="k in keyZ">{{i[k]}}</td></tr>
 				   </tbody>
 				  </table>
-			  </div>	  	
+			  </div>        
+        <div ng-if="forceWeekTable" class = "col-md-10 col-md-offset-1">
+          <table ng:repeat="invoiceTable in forceNextWeekData" class="table table-bordered table-hover table-striped">
+          {{console.log(invoiceTable)}}
+            <tr class = "success">
+              <th ng:repeat="k in keyZ">{{k}}</th>
+           </tr>
+           <tbody ng:repeat="i in invoiceTable">
+              <tr><td ng-repeat="k in keyZ">{{i[k]}}</td></tr>
+           </tbody>
+          </table>
+        </div>      
+      </div>
   		</div>
   	</div>
   </body>

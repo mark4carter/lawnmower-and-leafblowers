@@ -38,13 +38,13 @@ public class LawnController {
   }
   
   @CrossOrigin
-  @RequestMapping(value = "/{customerName}/addCustomer")
-  List<Customer> addCustomerByName(@PathVariable String customerName) {
+  @RequestMapping(value = "/{customerName}/{generatedDate}/addCustomer")
+  List<Customer> addCustomerByName(@PathVariable String customerName, @PathVariable Long generatedDate) {
     List<Technician> techs = technicianRepository.findAllByOrderByNumberOfCustomersAsc();    
     Technician assignedTech = techs.get(0);
     assignedTech.setNumberOfCustomers(assignedTech.getNumberOfCustomers() + 1);
     technicianRepository.saveAndFlush(assignedTech);
-    Customer newCustomer = new Customer(customerName, assignedTech, new Date());
+    Customer newCustomer = new Customer(customerName, assignedTech, generatedDate);
     customerRepository.save(newCustomer);
     
     return customerRepository.findAll();    
@@ -59,9 +59,27 @@ public class LawnController {
   }
   
   @CrossOrigin
-  @RequestMapping(value = "/forceNextWeek")
-  List<Invoice> forceNextWeek() {
-    return invoiceRepository.findAll();
+  @RequestMapping(value = "{newWeekDate}/forceNextWeek")
+  List<Invoice> forceNextWeek(@PathVariable Long newWeekDate) {
+    newWeekDate = removeHourAndMinutes(newWeekDate);
+    Long lastWeekDate = addDays(newWeekDate, -7);
+    List<Customer> customerList = customerRepository.findByNextDayOfServiceBetween(lastWeekDate, newWeekDate);
+    
+    for (Customer customer : customerList) {
+      Invoice newInvoice = new Invoice(customer, customer.getTechnician(), customer.getNextDayOfService());
+      invoiceRepository.save(newInvoice);
+      
+      Long nextDayOfService = addDays(customer.getNextDayOfService(), 14);
+      if(serviceIsWithinServiceMonths(nextDayOfService)) {
+        customer.setNextDayOfService(nextDayOfService);        
+      } else {
+        customer.setNextDayOfService(startNewYear(nextDayOfService));
+      }
+      
+      customerRepository.saveAndFlush(customer);
+    }
+    
+    return invoiceRepository.findByDateOfServiceBetweenOrderByTechnicianAsc(lastWeekDate, newWeekDate);
   }
   
   public Date createSignUpDate(Date date, int numberOfDays) {
@@ -73,6 +91,44 @@ public class LawnController {
     newDate.setTime(calendar.getTime().getTime());
     
     return newDate;
+  }
+  
+  public Boolean serviceIsWithinServiceMonths(Long nextDayOfService) {
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTimeInMillis(nextDayOfService);
+    int serviceMonth = calendar.get(Calendar.MONTH);
+    if (serviceMonth >= 2 && serviceMonth <= 9 )  {
+      return true;
+    }
+    return false;
+    
+  }
+  
+  public Long addDays(Long date, int numberOfDays) {
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTimeInMillis(date);
+    calendar.add(Calendar.DATE, numberOfDays);
+    return calendar.getTime().getTime();
+  }
+  
+  public Long startNewYear(Long date) {
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTimeInMillis(date);
+    calendar.add(Calendar.YEAR, 1);
+    calendar.set(Calendar.MONTH, 2);
+    calendar.set(Calendar.DATE, 1);
+    System.out.println("New Year = " + calendar);
+    return calendar.getTime().getTime();
+  }
+  
+  public Long removeHourAndMinutes(Long date) {
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTimeInMillis(date);
+    GregorianCalendar newCalendar = new GregorianCalendar(
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DATE));
+    return newCalendar.getTime().getTime();
   }
   
   @Autowired

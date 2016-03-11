@@ -39,18 +39,11 @@ public class Customer {
     
   }
   
-  Customer(String name, Technician technician, Date signUpDate) {
-    this.name = name;
-    this.technician = technician;
-    this.signUpDate = signUpDate.getTime();
-    this.nextDayOfService = createSignUpDate(signUpDate).getTime();
-  }
-  
   Customer(String name, Technician technician, Long signUpDate) {
     this.name = name;
     this.technician = technician;
     this.signUpDate = signUpDate;
-    this.nextDayOfService = createSignUpDate(new Date(signUpDate)).getTime();
+    this.nextDayOfService = createSignUpDate(signUpDate);
     
   }
   
@@ -103,14 +96,12 @@ public class Customer {
     this.nextDayOfService = nextDayOfService;
   }
   
-  public Date createSignUpDate(Date date) {
-    Date newDate = new Date(date.getTime());
+  public Long createSignUpDate(Long date) {
     
     GregorianCalendar calendar = new GregorianCalendar();
-    calendar.setTime(newDate);
+    calendar.setTimeInMillis(date);
     calendar.add(Calendar.DATE, 14);
-    newDate.setTime(calendar.getTime().getTime());
     
-    return newDate;
+    return calendar.getTimeInMillis();
   }
 }
