@@ -1,0 +1,57 @@
+<div ng-controller="manualReportsCtrl">
+  <span class="col-md-8 col-md-offset-1">
+    <h4>Generate Your Manual Reports</h4>
+  </span>            
+  <br><br><br>          
+  <a class="btn btn-success" ng-click="sendReportRequest()" role="button">Generate</a>
+  <div class="col-md-8 col-md-offset-1">
+    <div class="form-group">
+      <div class="col-md-4">
+        <label for="sel1">Type:</label>
+        <select class="form-control" ng-model="firstTypeBox">
+          <option>Monthly Report</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="sel1">From:</label>
+        <select class="form-control" ng-model="monthOne">
+          <option ng-repeat="month in months">{{month}}</option>
+        </select>
+        <select ng-disabled="isDayOneDisabled()" class="form-control" ng-model="dayOne">
+          <option ng-repeat="day in dateNumbers">{{day}}</option>
+        </select>
+        <select ng-disabled="isYearOneisabled()" class="form-control" ng-model="yearOne">
+          <option ng-repeat="year in years">{{year}}</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label for="sel1">From:</label>
+        <select class="form-control" ng-model="monthTwo">
+          <option ng-repeat="month in months">{{month}}</option>
+        </select>
+        <select ng-disabled="isDayTwoDisabled()" class="form-control" ng-model="dayTwo">
+          <option ng-repeat="day in dateNumbers">{{day}}</option>
+        </select>
+        <select ng-disabled="isYearTwoDisabled()" class="form-control" ng-model="yearTwo">
+          <option ng-repeat="year in years">{{year}}</option>
+        </select>
+      </div>
+
+    </div>
+  </div>        
+  <div ng-if="defaultReportTable" class = "col-md-10 col-md-offset-1">
+    <h3> Monthly Invoice by Customer</h3>
+    <table ng:repeat="invoiceTable in processedMonthlyReportData" class="table table-bordered table-hover table-striped">
+      <tr class = "warning">
+        <th ng:repeat="k in reportKeyZ">{{k}}</th>
+      </tr>
+      <tbody ng:repeat="i in invoiceTable">
+        <tr><td ng-repeat="k in reportKeyZ">{{parseInvoice(i, k, i[k])}}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>

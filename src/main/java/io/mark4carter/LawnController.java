@@ -102,6 +102,18 @@ public class LawnController {
     technicianRepository.save(CEO);
   }
   
+  @CrossOrigin
+  @RequestMapping(value = "{monthOne}/{yearOne}/{monthTwo}/{yearTwo}/generateMonth")
+  List<Invoice> generateMonthlyInvoice(@PathVariable int monthOne,
+                                        @PathVariable int yearOne,
+                                        @PathVariable int monthTwo,
+                                        @PathVariable int yearTwo) {
+    Long startMonth = this.getBeginningOfLastMonth(this.addMonths(this.getCalendarFromMonthAndYear(monthOne, yearOne), 1));
+    Long endMonth = this.getEndOfLastMonth(this.addMonths(this.getCalendarFromMonthAndYear(monthTwo, yearOne), 1));
+    
+    return invoiceRepository.findByDateOfServiceBetweenOrderByCustomerAsc(startMonth, endMonth);
+  }
+  
   public Date createSignUpDate(Date date, int numberOfDays) {
     Date newDate = new Date(date.getTime());
     
@@ -111,6 +123,11 @@ public class LawnController {
     newDate.setTime(calendar.getTime().getTime());
     
     return newDate;
+  }
+  
+  public Long getCalendarFromMonthAndYear(int month, int year) {
+    GregorianCalendar calendar = new GregorianCalendar(year, month, 1);
+    return calendar.getTime().getTime();
   }
   
   public Long getBeginningOfLastMonth(Long newWeekDate) {
@@ -154,6 +171,13 @@ public class LawnController {
     GregorianCalendar calendar = new GregorianCalendar();
     calendar.setTimeInMillis(date);
     calendar.add(Calendar.DATE, numberOfDays);
+    return calendar.getTime().getTime();
+  }
+  
+  public Long addMonths(Long date, int numberOfMonths) {
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTimeInMillis(date);
+    calendar.add(Calendar.MONTH, numberOfMonths);
     return calendar.getTime().getTime();
   }
   

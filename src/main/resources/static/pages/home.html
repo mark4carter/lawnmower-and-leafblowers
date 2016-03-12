@@ -1,6 +1,61 @@
-    <div class="jumbotron text-center">
-        <h1>Home Page</h1>
 
-        <p>{{ message }}</p>
-        <p>{{ message2 }}</p>
-    </div>
+<div ng-controller="MainCtrl">
+  <span class="col-md-8 col-md-offset-1">
+    <h4>Current Day : {{currentDate.getFullYear()}} - {{(currentDate.getMonth()) + 1}} - {{currentDate.getDate()}} </h4>
+  </span>
+  <br>
+  <span class="col-md-6 col-md-offset-1">
+    - Work week is from current day to current day (ie. Wednesday to Wednesday) 
+    <br>
+    - First service date will be 2 weeks from addition of client
+    <br><br> 
+  </span>
+  <br><br><br>
+  <div class="input-group search-bar col-md-8 col-md-offset-2">
+    <input type="text" ng-model="addCustomerName" class="form-control" placeholder="Add Customer" autofocus /> <span class="input-group-addon bar-style" ng-click="sendit('ADD_CUSTOMER')" ><i class="glyphicon glyphicon-plus"></i></span>
+    <input type="text" ng-model="addTechName" class="form-control" placeholder="Add Technician" autofocus /> <span class="input-group-addon bar-style" ng-click="sendit('ADD_TECH')" ><i class="glyphicon glyphicon-plus"></i></span>     
+  </div>
+  <br>
+  <div class="col-md-8 col-md-offset-2">
+    <a class="btn btn-default" ng-click="sendit('LIST_CUSTOMER')" role="button">Show Customers</a>
+    <a class="btn btn-default" ng-click="sendit('LIST_TECHNICIANS')" role="button">List Technicians</a>
+    <a class="btn btn-default" ng-click="sendit('LIST_INVOICES')" role="button">List Invoices</a>
+    <a class="btn btn-default btn-primary" ng-click="sendit('FORCE_NEXT_WEEK')" role="button">Force Next Week</a>
+    <a class="btn btn-default btn-danger" ng-click="sendit('RESET_ALL')" role="button">Reset All</a>
+  </div>
+  <br>
+  <br>
+  <br>
+  <div ng-if="defaultTable" class = "col-md-10 col-md-offset-1">
+    <table class="table table-bordered table-hover table-striped">
+      <tr class = "success">
+        <th ng:repeat="k in keyZ">{{k}}</th>
+      </tr>
+      <tbody ng:repeat="i in myData">
+        <tr><td ng-repeat="k in keyZ">{{parseListData(i, k, i[k])}}</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div ng-if="forceWeekTable" class = "col-md-10 col-md-offset-1">
+    <h3> Work Orders by Technician </h3>
+    <table ng:repeat="invoiceTable in forceNextWeekData" class="table table-bordered table-hover table-striped">
+      <tr class = "success">
+        <th ng:repeat="k in keyZ">{{k}}</th>
+      </tr>
+      <tbody ng:repeat="i in invoiceTable">
+        <tr><td ng-repeat="k in keyZ">{{parseInvoice(i, k, i[k])}}</td></tr>
+      </tbody>
+    </table>
+  </div>        
+  <div ng-if="monthTable" class = "col-md-10 col-md-offset-1">
+    <h3> Monthly Invoice by Customer -- {{oldMonth}} </h3>
+    <table ng:repeat="invoiceTable in processNewMonthData" class="table table-bordered table-hover table-striped">
+      <tr class = "warning">
+        <th ng:repeat="k in monthKeyZ">{{k}}</th>
+      </tr>
+      <tbody ng:repeat="i in invoiceTable">
+        <tr><td ng-repeat="k in keyZ">{{parseInvoice(i, k, i[k])}}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
