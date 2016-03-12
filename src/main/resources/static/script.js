@@ -1,4 +1,24 @@
-var app = angular.module('app', ['ngTouch']);
+var app = angular.module('app', ['ngTouch', 'ngRoute']);
+
+app.config(function($routeProvider) {
+        $routeProvider
+
+            // route for the home page
+            .when('/', {
+                templateUrl : 'pages/home.html',
+                controller  : 'aboutController'
+            })
+
+            // route for the about page
+            .when('/about', {
+                templateUrl : 'pages/about.html'
+            })
+
+            // route for the contact page
+            .when('/contact', {
+                templateUrl : 'pages/contact.html'
+            });
+    });
 
 
 app.controller('MainCtrl', function ($scope, $http) {
@@ -10,10 +30,18 @@ app.controller('MainCtrl', function ($scope, $http) {
   $scope.monthTable = false;
   $scope.oldMonth;
   var newMonth = false;
+  $scope.message = "Testing"
 
   var monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
   ];
+
+ $scope.dateNumbers = ['1st'];
+    for ( var i = 2; i < 32; i++) {
+      $scope.dateNumbers.push(i);
+    }
+
+  $scope.months = monthNames;
 
   $scope.selectchoice =" "
   $scope.base = "http://localhost:8080/controller/"
@@ -38,7 +66,7 @@ app.controller('MainCtrl', function ($scope, $http) {
   }
 
   $scope.sendit = function(action) {
-    console.log("sending");
+    console.log("sending")
     var url = $scope.base + "/listCustomers/";
     switch(action) {
       case "ADD_CUSTOMER" :
@@ -91,6 +119,40 @@ app.controller('MainCtrl', function ($scope, $http) {
     })
   }
 
+  $scope.parseInvoice = function (i, k, j) {
+    if (k == "dateOfService") {
+      var sendDate = new Date(j);
+      return "" + monthNames[sendDate.getMonth()] + " " + 
+        sendDate.getDate() + ", " + 
+        sendDate.getFullYear();
+    } else if (k == "customer") {
+      return j["name"];
+    } else if (k == "technician") {
+      return j["name"];
+    }
+    return j;
+  }
+
+  $scope.parseListData = function (i, k, j) {
+    if (k == "signUpDate" ||
+          k == "nextDayOfService" ||
+          k == "dateOfService") {
+      var sendDate = new Date(j);
+      return "" + monthNames[sendDate.getMonth()] + " " + 
+        sendDate.getDate() + ", " + 
+        sendDate.getFullYear();
+    } else if (k == "customer") {
+      return j["name"];
+    } else if (k == "technician") {
+      return j["name"];
+    }
+    return j;
+  }
+
+  $scope.debugLog = function (a, b, c) {
+    console.log(a);
+  }
+
   var processForceNextWeek = function(response) {
     var data = response.data;
     if (data[0]) {
@@ -127,8 +189,6 @@ app.controller('MainCtrl', function ($scope, $http) {
     var url = $scope.base + $scope.toJavaDate($scope.currentDate) + "/listMonthlyInvoice"
     $http.get(url)
     .then(function(response) {
-      console.log(response.data.length)
-      console.log(response);
         var monthData = response.data;
         if (monthData[0]) {
           var currentCustomerId = monthData[0].customer.idCustomer;
@@ -155,4 +215,24 @@ app.controller('MainCtrl', function ($scope, $http) {
     newMonth = false;
   }
 
+});
+
+app.controller('manualReportsCtrl', function ($scope, $http) {
+  $scope.message2 = "???"
+  $scope.firstTypeBox = "Monthly Report";
+  $scope.monthOne = "January";
+  $scope.dayOne = "1st"; 
+  $scope.monthTwo = "January";
+  $scope.dayTwo = "1st"; 
+
+  $scope.isDayOneDisabled = function() {
+    return $scope.firstTypeBox == "Monthly Report"
+  }
+  $scope.isDayTwoDisabled = function() {
+    return $scope.firstTypeBox == "Monthly Report"
+  }
+  $scope.isMonthOneDisabled = function() {
+  }
+  $scope.isMonthTwoDisabled = function() {
+  }  
 });
