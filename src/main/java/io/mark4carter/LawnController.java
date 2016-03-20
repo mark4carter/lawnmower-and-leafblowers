@@ -47,6 +47,8 @@ public class LawnController {
   @CrossOrigin
   @RequestMapping(value = "/{customerName}/{generatedDate}/addCustomer")
   List<Customer> addCustomerByName(@PathVariable String customerName, @PathVariable Long generatedDate) {
+    
+    
     List<Technician> techs = technicianRepository.findAllByOrderByNumberOfCustomersAsc();    
     Technician assignedTech = techs.get(0);
     assignedTech.setNumberOfCustomers(assignedTech.getNumberOfCustomers() + 1);
@@ -55,6 +57,8 @@ public class LawnController {
     customerRepository.save(newCustomer);
     
     return customerRepository.findAll();    
+    
+    
   }
   
   @CrossOrigin
@@ -111,8 +115,13 @@ public class LawnController {
   
   @CrossOrigin
   @RequestMapping(value = "/monthWithPost", method = RequestMethod.POST)  
-  List<Invoice> generateMonthlyWithPost(@RequestBody ManualReport reportRequest) {
+  List generateMonthlyWithPost(@RequestBody ManualReport reportRequest) {
     
+    
+    
+    /*
+     * 
+     * rememer return List<Invoice>
     Long startMonth = this.getBeginningOfLastMonth
         (this.addMonths
             (this.getCalendarFromMonthAndYear
@@ -124,9 +133,13 @@ public class LawnController {
             (this.getCalendarFromMonthAndYear
                 (Integer.parseInt(reportRequest.getMonthTwo()), 
                     Integer.parseInt(reportRequest.getYearTwo())), 1));
+                    
     
     return invoiceRepository
         .findByDateOfServiceBetweenOrderByCustomerAsc(startMonth, endMonth);
+    */
+    
+    return customerRepository.findCountPerDay();
   }
   
   
