@@ -262,12 +262,38 @@ app.controller('manualReportsCtrl', function ($scope, $http) {
       }
     }
 
-    switch(type) {
-      case "Monthly Report" :
-      url = $scope.base + monthOne + "/" + yearOne + "/" + monthTwo + "/" + yearTwo + "/generateMonth"
-      break;
+    var postMonthData = {
+      type : type,
+      dayOne : dayOne,
+      monthOne : monthOne,
+      yearOne : yearOne,
+      dayTwo : dayTwo,
+      monthTwo : monthTwo,
+      yearTwo : yearTwo
     }
 
+    switch(type) {
+      case "Monthly Report" :
+        url = $scope.base + "monthWithPost"
+        break;
+      case "Monthly ReportTemp" :
+        url = $scope.base + monthOne + "/" + yearOne + "/" + monthTwo + "/" + yearTwo + "/generateMonth"
+        break;
+    }
+
+    $http.post(url, postMonthData)
+      .then(function (response) {
+        hideTables();
+        console.log(response);
+        switch(type) {
+          default:
+          processMonthlyReport(response);
+          break;
+        }
+      })
+
+
+    /*
     $http.get(url)
     .then(function(response) {
       hideTables();
@@ -278,6 +304,7 @@ app.controller('manualReportsCtrl', function ($scope, $http) {
         break;
       }
     })
+    */
   }
 
   var processMonthlyReport = function(response) {

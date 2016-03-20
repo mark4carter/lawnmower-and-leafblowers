@@ -1,14 +1,21 @@
 package io.mark4carter;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -103,16 +110,29 @@ public class LawnController {
   }
   
   @CrossOrigin
-  @RequestMapping(value = "{monthOne}/{yearOne}/{monthTwo}/{yearTwo}/generateMonth")
-  List<Invoice> generateMonthlyInvoice(@PathVariable int monthOne,
-                                        @PathVariable int yearOne,
-                                        @PathVariable int monthTwo,
-                                        @PathVariable int yearTwo) {
-    Long startMonth = this.getBeginningOfLastMonth(this.addMonths(this.getCalendarFromMonthAndYear(monthOne, yearOne), 1));
-    Long endMonth = this.getEndOfLastMonth(this.addMonths(this.getCalendarFromMonthAndYear(monthTwo, yearOne), 1));
+  @RequestMapping(value = "/monthWithPost", method = RequestMethod.POST)  
+  List<Invoice> generateMonthlyWithPost(@RequestBody ManualReport reportRequest) {
     
-    return invoiceRepository.findByDateOfServiceBetweenOrderByCustomerAsc(startMonth, endMonth);
+    Long startMonth = this.getBeginningOfLastMonth
+        (this.addMonths
+            (this.getCalendarFromMonthAndYear
+                (Integer.parseInt(reportRequest.getMonthOne()), 
+                    Integer.parseInt(reportRequest.getYearOne())), 1));
+    
+    Long endMonth = this.getEndOfLastMonth
+        (this.addMonths
+            (this.getCalendarFromMonthAndYear
+                (Integer.parseInt(reportRequest.getMonthTwo()), 
+                    Integer.parseInt(reportRequest.getYearTwo())), 1));
+    
+    return invoiceRepository
+        .findByDateOfServiceBetweenOrderByCustomerAsc(startMonth, endMonth);
   }
+  
+  
+  /*
+   * UTILITY METHODS (to be split later)
+   */
   
   public Date createSignUpDate(Date date, int numberOfDays) {
     Date newDate = new Date(date.getTime());
