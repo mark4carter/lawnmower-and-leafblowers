@@ -1,6 +1,7 @@
 package io.mark4carter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -51,6 +52,16 @@ public class LawnController {
     
     List<Technician> techs = technicianRepository.findAllByOrderByNumberOfCustomersAsc();    
     Technician assignedTech = techs.get(0);
+    
+    /*
+    List<Object[]> check = customerRepository.findCountPerDay();
+    
+    System.out.println(techs.get(0) == check.get(0)[0]);
+    System.out.println  ((   (Technician) techs.get(0)    ).getName())    ;
+    System.out.println  ((   (Technician) check.get(0)[0]    ).getName())   ;
+    */
+    
+    
     assignedTech.setNumberOfCustomers(assignedTech.getNumberOfCustomers() + 1);
     technicianRepository.saveAndFlush(assignedTech);
     Customer newCustomer = new Customer(customerName, assignedTech, generatedDate);
@@ -113,7 +124,7 @@ public class LawnController {
   
   @CrossOrigin
   @RequestMapping(value = "/monthWithPost", method = RequestMethod.POST)  
-  List<Invoice> generateMonthlyWithPost(@RequestBody ManualReport reportRequest) {
+  List generateMonthlyWithPost(@RequestBody ManualReport reportRequest) {
     
     Long startMonth = this.getBeginningOfLastMonth
         (this.addMonths
@@ -127,8 +138,11 @@ public class LawnController {
                 (Integer.parseInt(reportRequest.getMonthTwo()), 
                     Integer.parseInt(reportRequest.getYearTwo())), 1));
     
-    return invoiceRepository
-        .findByDateOfServiceBetweenOrderByCustomerAsc(startMonth, endMonth);
+    List<Object[]> check = customerRepository.findCountPerDay();
+    
+    System.out.println(check.get(0)[1]);
+    
+    return customerRepository.newFindCount();
   }
   
   

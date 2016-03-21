@@ -1,0 +1,14 @@
+SELECT column5, COUNT(*)
+FROM table1
+GROUP BY column5
+
+public interface UserRepository extends CrudRepository<User, Integer> {
+    @Query("SELECT COUNT(u) FROM User u WHERE u.name=?1")
+    Long aMethodNameOrSomething(String name);
+}
+
+
+
+
+
+select customer0_.id_technician as col_0_0_, count(customer0_.id_customer) as col_1_0_, technician1_.id_technician as id_techn1_2_, technician1_.name as name2_2_, technician1_.number_of_customers as number_o3_2_ from customer customer0_ inner join technician technician1_ on customer0_.id_technician=technician1_.id_technician [90016-191]
