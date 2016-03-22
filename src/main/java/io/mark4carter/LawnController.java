@@ -127,10 +127,21 @@ public class LawnController {
                 (Integer.parseInt(reportRequest.getMonthTwo()), 
                     Integer.parseInt(reportRequest.getYearTwo())), 1));
     
-    List<Object[]> check = customerRepository.findCountPerDay();
-    
-    return customerRepository.newFindCount();
+    return invoiceRepository.findByDateOfServiceBetweenOrderByCustomerAsc(startMonth, endMonth);
   }
+  
+  @CrossOrigin
+  @RequestMapping(value = "{monthOne}/{yearOne}/{monthTwo}/{yearTwo}/generateMonth")
+  List<Invoice> generateMonthlyInvoice(@PathVariable int monthOne,
+                                        @PathVariable int yearOne,
+                                        @PathVariable int monthTwo,
+                                        @PathVariable int yearTwo) {
+    Long startMonth = this.getBeginningOfLastMonth(this.addMonths(this.getCalendarFromMonthAndYear(monthOne, yearOne), 1));
+    Long endMonth = this.getEndOfLastMonth(this.addMonths(this.getCalendarFromMonthAndYear(monthTwo, yearOne), 1));
+    
+    return invoiceRepository.findByDateOfServiceBetweenOrderByCustomerAsc(startMonth, endMonth);
+  }
+  
   
   
   /*
