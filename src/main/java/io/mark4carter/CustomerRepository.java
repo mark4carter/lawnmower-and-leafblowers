@@ -18,7 +18,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>{
   */
   
   //@Query("SELECT v, u FROM Customer u RIGHT JOIN u.technician v")
-  @Query("SELECT v, COUNT(u) FROM Customer u RIGHT JOIN u.technician v GROUP BY u.technician.idTechnician ORDER BY COUNT(u) ASC")
+  @Query("SELECT v, COUNT(u) FROM Customer u RIGHT JOIN u.technician v GROUP BY v.idTechnician ORDER BY COUNT(u) ASC")
   List newFindCount();
   
   public void deleteAll();

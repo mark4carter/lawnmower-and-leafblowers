@@ -53,13 +53,13 @@ public class LawnController {
     List<Technician> techs = technicianRepository.findAllByOrderByNumberOfCustomersAsc();    
     Technician assignedTech = techs.get(0);
     
-    /*
-    List<Object[]> check = customerRepository.findCountPerDay();
+    
+    List<Object[]> check = customerRepository.newFindCount();
     
     System.out.println(techs.get(0) == check.get(0)[0]);
     System.out.println  ((   (Technician) techs.get(0)    ).getName())    ;
     System.out.println  ((   (Technician) check.get(0)[0]    ).getName())   ;
-    */
+    
     
     
     assignedTech.setNumberOfCustomers(assignedTech.getNumberOfCustomers() + 1);
