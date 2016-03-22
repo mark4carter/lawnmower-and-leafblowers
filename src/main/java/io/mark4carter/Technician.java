@@ -15,9 +15,7 @@ public class Technician {
   @GeneratedValue
   private Long idTechnician;
   
-  private String name;
-  
-  private Long numberOfCustomers;  
+  private String name; 
 
   @OneToMany(mappedBy="technician")
   private Set<Customer> customers = new HashSet<Customer>();
@@ -31,7 +29,6 @@ public class Technician {
   
   Technician(String name) {
     this.name = name;
-    this.numberOfCustomers = (long) 0;
   }
 
   public Long getIdTechnician() {
@@ -49,12 +46,4 @@ public class Technician {
   public void setName(String name) {
     this.name = name;
   }
-
-  public Long getNumberOfCustomers() {
-    return numberOfCustomers;
-  }
-
-  public void setNumberOfCustomers(Long numberOfCustomers) {
-    this.numberOfCustomers = numberOfCustomers;
-  }  
 }

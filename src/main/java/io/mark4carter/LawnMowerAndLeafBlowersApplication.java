@@ -34,7 +34,6 @@ public class LawnMowerAndLeafBlowersApplication implements CommandLineRunner{
     technicianRepository.save(techOne);
     
     Customer customerOne = new Customer("CustomerJohn", techOne, new Date().getTime());
-    techOne.setNumberOfCustomers(techOne.getNumberOfCustomers() + 1);
     technicianRepository.saveAndFlush(techOne);    
     customerRepository.save(customerOne);
     

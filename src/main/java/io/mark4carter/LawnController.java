@@ -48,21 +48,10 @@ public class LawnController {
   @CrossOrigin
   @RequestMapping(value = "/{customerName}/{generatedDate}/addCustomer")
   List<Customer> addCustomerByName(@PathVariable String customerName, @PathVariable Long generatedDate) {
-    
-    
-    List<Technician> techs = technicianRepository.findAllByOrderByNumberOfCustomersAsc();    
-    Technician assignedTech = techs.get(0);
-    
-    
+        
     List<Object[]> check = customerRepository.newFindCount();
+    Technician assignedTech = (Technician) check.get(0)[0];
     
-    System.out.println(techs.get(0) == check.get(0)[0]);
-    System.out.println  ((   (Technician) techs.get(0)    ).getName())    ;
-    System.out.println  ((   (Technician) check.get(0)[0]    ).getName())   ;
-    
-    
-    
-    assignedTech.setNumberOfCustomers(assignedTech.getNumberOfCustomers() + 1);
     technicianRepository.saveAndFlush(assignedTech);
     Customer newCustomer = new Customer(customerName, assignedTech, generatedDate);
     customerRepository.save(newCustomer);
@@ -139,8 +128,6 @@ public class LawnController {
                     Integer.parseInt(reportRequest.getYearTwo())), 1));
     
     List<Object[]> check = customerRepository.findCountPerDay();
-    
-    System.out.println(check.get(0)[1]);
     
     return customerRepository.newFindCount();
   }
