@@ -101,6 +101,34 @@ public class Customer {
     calendar.setTimeInMillis(date);
     calendar.add(Calendar.DATE, 14);
     
-    return calendar.getTimeInMillis();
+    if (serviceIsWithinServiceMonths(calendar.getTimeInMillis())) {
+      return calendar.getTimeInMillis();
+    } else {
+      return startNewYear(calendar.getTimeInMillis());
+    }
+      
+      
+  }
+  
+  public Boolean serviceIsWithinServiceMonths(Long nextDayOfService) {
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTimeInMillis(nextDayOfService);
+    int serviceMonth = calendar.get(Calendar.MONTH);
+    if (serviceMonth >= 2 && serviceMonth <= 9 )  {
+      return true;
+    }
+    return false;    
+  }
+  
+
+  
+  public Long startNewYear(Long date) {
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTimeInMillis(date);
+    calendar.add(Calendar.YEAR, 1);
+    calendar.set(Calendar.MONTH, 2);
+    calendar.set(Calendar.DATE, 1);
+    System.out.println("New Year = " + calendar);
+    return calendar.getTime().getTime();
   }
 }
