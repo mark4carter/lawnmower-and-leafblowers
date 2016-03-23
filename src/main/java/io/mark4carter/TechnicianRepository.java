@@ -8,6 +8,8 @@ public interface TechnicianRepository extends JpaRepository<Technician, Long>{
   
   //List<Technician> findAllByOrderByNumberOfCustomersAsc();
   
+  Technician findByIdTechnician(Long techId);
+  
   public void deleteAll();
 
 }

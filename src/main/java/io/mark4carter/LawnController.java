@@ -142,6 +142,29 @@ public class LawnController {
     return invoiceRepository.findByDateOfServiceBetweenOrderByCustomerAsc(startMonth, endMonth);
   }
   
+  @CrossOrigin
+  @RequestMapping(value="{techId}/{monthOne}/{yearOne}/{monthTwo}/{yearTwo}/invoicesByTech")
+  List<Invoice> listInvoicesByTech(@PathVariable Long techId,
+                                    @PathVariable int monthOne,
+                                    @PathVariable int yearOne,
+                                    @PathVariable int monthTwo,
+                                    @PathVariable int yearTwo) {
+    
+    Long startMonth = this.getBeginningOfLastMonth(this.addMonths(this.getCalendarFromMonthAndYear(monthOne, yearOne), 1));
+    Long endMonth = this.getEndOfLastMonth(this.addMonths(this.getCalendarFromMonthAndYear(monthTwo, yearOne), 1));
+    Technician tech = technicianRepository.findByIdTechnician(techId);
+    
+    return invoiceRepository.findByDateOfServiceBetweenAndTechnician(startMonth, endMonth, tech);
+  }
+  
+  @CrossOrigin
+  @RequestMapping(value="{techId}/allInvoicesByTech")
+  List<Invoice> listAllInvoicesByTech(@PathVariable Long techId){
+    Technician tech = technicianRepository.findByIdTechnician(techId);
+    
+    return invoiceRepository.findByTechnician(tech);
+  }
+  
   
   
   /*

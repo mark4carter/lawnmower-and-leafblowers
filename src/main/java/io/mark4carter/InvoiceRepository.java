@@ -12,5 +12,9 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long>{
   
   public List<Invoice> findByDateOfServiceBetweenOrderByCustomerAsc(Long start, Long end);
   
+  public List<Invoice> findByDateOfServiceBetweenAndTechnician(Long start, Long end, Technician tech);
+  
+  public List<Invoice> findByTechnician(Technician tech);
+  
   public void deleteAll();
 }
